@@ -1,0 +1,69 @@
+---
+title: "Analysis For Micro"
+author: "Madhumitha Ramakrishnan"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r}
+# Install only if not already installed
+# install.packages("tidyverse")
+# install.packages("ggpubr")
+# install.packages("rstatix")
+
+library(tidyverse)  # Core packages: dplyr, ggplot2, readr, etc.
+library(ggpubr)     # For easy boxplots and stats
+library(rstatix)    # For non-parametric tests like Kruskal-Wallis
+```
+```{r}
+library(readxl)
+Micro_Data <- read_excel("C:/Users/madhu/OneDrive/Desktop/Madhumitha/SSE. Msc Economics/Semester 2/Micro II/Micro Data.xlsx")
+View(Micro_Data)
+```
+
+
+```{r}
+# Convert relevant columns to factors
+Micro_Data <- Micro_Data %>%
+  mutate(
+    income_group = factor(Micro_Data$`What is your monthly household income?`),
+    household_type = factor(Micro_Data$`What is your household size?`),
+    age_group = factor(Micro_Data$`What is your age group?`),
+    avg_spend = as.numeric(Micro_Data$`On average, how much do you spend per order on instant grocery apps?`)
+  )
+```
+
+```{r}
+summary(Micro_Data)
+table(Micro_Data$income_group)
+table(Micro_Data$household_type)
+```
+```{r}
+# Run Kruskal-Wallis Test: Hypothesis 1
+Micro_Data %>%
+  kruskal_test(Micro_Data$`How often do you purchase groceries just because of a discount or promotion?`~ Micro_Data$`What is your monthly household income?`)
+```
+```{r}
+
+# Hypothesis 2: Chi Square test
+# Convert frequency to ordered factor
+Micro_Data <- Micro_Data %>%
+  mutate(
+    q_freq = factor(Micro_Data$`How often do you use instant grocery delivery services`)
+  )
+
+# Create contingency table
+table(Micro_Data$`What is your household size?`, Micro_Data$`How often do you use instant grocery delivery services`)
+
+# Run Chi-Square Test
+chisq.test(table(Micro_Data$`What is your household size?`, Micro_Data$`How often do you use instant grocery delivery services`))
+```
+```{r}
+# Hypothesis 3: 
+
+# Kruskal-Wallis Test
+Micro_Data %>%
+  kruskal_test(Micro_Data$`How often do you buy items that you did not initially plan to purchase when using instant grocery apps?`~ Micro_Data$`What is your monthly household income?`)
+```
+
+
